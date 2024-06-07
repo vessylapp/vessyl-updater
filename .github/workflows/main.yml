@@ -1,4 +1,4 @@
-name: Build and Publish Vessyl Worker
+name: Build and Publish Vessyl Updater
 
 on:
   release:
