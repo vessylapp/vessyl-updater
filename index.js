@@ -123,7 +123,7 @@ async function pullUI() {
 async function runWorker() {
     console.log('Starting runWorker...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vw', '-d', '-e', 'MONGO_URI=mongodb://vdb:27017/', '-v', '/var/run/docker.sock:/var/run/docker.sock', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-worker:latest']);
+        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vw', '-d', '-e', 'MONGO_URI=mongodb://vdb:27017/', '-e', 'PROXY_URI=http://vp:4040', '-v', '/var/run/docker.sock:/var/run/docker.sock', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-worker:latest']);
 
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
