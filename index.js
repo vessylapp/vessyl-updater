@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 async function stopContainers() {
     console.log('Starting stopContainers...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['stop', 'vw', 'vui']);
+        const child = spawn('docker', ['stop', 'vw', 'vui', 'vp']);
 
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
@@ -27,7 +27,31 @@ async function stopContainers() {
 async function removeContainers() {
     console.log('Starting removeContainers...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['rm', 'vw', 'vui']);
+        const child = spawn('docker', ['rm', 'vw', 'vui', 'vp']);
+
+        child.stdout.on('data', (data) => {
+            console.log(`${data}`);
+        });
+
+        child.stderr.on('data', (data) => {
+            console.error(`${data}`);
+        });
+
+        child.on('error', (error) => {
+            console.error(error);
+        });
+
+        child.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            resolve();
+        });
+    });
+}
+
+async function pullProxy() {
+    console.log('Starting pullProxy...');
+    return new Promise((resolve, reject) => {
+        const child = spawn('docker', ['pull', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
 
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
@@ -120,6 +144,30 @@ async function runWorker() {
     });
 }
 
+async function runProxy() {
+    console.log('Starting runProxy...');
+    return new Promise((resolve, reject) => {
+        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vp', '-d', '-p', '80:80', '-p', '443:443', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
+
+        child.stdout.on('data', (data) => {
+            console.log(`${data}`);
+        });
+
+        child.stderr.on('data', (data) => {
+            console.error(`${data}`);
+        });
+
+        child.on('error', (error) => {
+            console.error(error);
+        });
+
+        child.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            resolve();
+        });
+    });
+}
+
 async function runUI() {
     console.log('Starting runUI...');
     return new Promise((resolve, reject) => {
@@ -154,9 +202,13 @@ async function main() {
     await delay(1000);
     await removeContainers();
     await delay(1000);
+    await pullProxy()
+    await delay(1000);
     await pullWorker();
     await delay(1000);
     await pullUI();
+    await delay(1000);
+    await runProxy();
     await delay(1000);
     await runWorker();
     await delay(1000);
