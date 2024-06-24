@@ -147,8 +147,7 @@ async function runWorker() {
 async function runProxy() {
     console.log('Starting runProxy...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vp', '-d', '-p', '80:80', '-p', '443:443', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
-
+        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vp', '-v', 'proxy_data:/etc/caddy', '-d', '-p', '80:80', '-p', '443:443', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
         });
