@@ -123,7 +123,7 @@ async function pullUI() {
 async function runWorker() {
     console.log('Starting runWorker...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vw', '-d', '-e', 'MONGO_URI=mongodb://vdb:27017/', '-v', '/var/run/docker.sock:/var/run/docker.sock', '-v', 'proxy_data:/etc/caddy', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-worker:latest']);
+        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vw', '-d', '-e', 'MONGO_URI=mongodb://vdb:27017/', '-v', '/var/run/docker.sock:/var/run/docker.sock', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-worker:latest']);
 
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
@@ -147,7 +147,7 @@ async function runWorker() {
 async function runProxy() {
     console.log('Starting runProxy...');
     return new Promise((resolve, reject) => {
-        const child = spawn('docker', ['run', '--name', 'vp', '-v', 'proxy_data:/etc/caddy', '-d', '-p', '80:80', '-p', '443:443', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
+        const child = spawn('docker', ['run', '--network', 'vessyl-bridge', '--name', 'vp', '-d', '-p', '80:80', '-p', '443:443', '--restart', 'always', 'ghcr.io/vessylapp/vessyl-proxy:latest']);
         child.stdout.on('data', (data) => {
             console.log(`${data}`);
         });
